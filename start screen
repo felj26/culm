@@ -1,0 +1,59 @@
+import pygame
+import sys
+
+# Initialize Pygame
+pygame.init()
+
+# Constants
+WIDTH, HEIGHT = 1000, 750  # Screen dimensions
+BG_IMAGE = "C:/Users/Felix/Downloads/startscreen1_resized.jpeg"  # Path to the uploaded image
+START_BUTTON = "C:/Users/Felix/Downloads/start button.png"  # Path to the default start button image
+HOVER_BUTTON = "C:/Users/Felix/Downloads/start_button_hover_effect.png"  # Path to the hover start button image
+FPS = 60
+
+# Setup screen
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Game Start Screen")
+clock = pygame.time.Clock()
+
+# Load background image
+background = pygame.image.load(BG_IMAGE)
+background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+
+# Load button images
+start_button_img = pygame.image.load(START_BUTTON)
+hover_button_img = pygame.image.load(HOVER_BUTTON)
+button_width, button_height = start_button_img.get_size()
+button_x = (WIDTH - button_width) // 2
+button_y = HEIGHT - 165
+button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+
+def main():
+    running = True
+
+    while running:
+        screen.blit(background, (0, 0))
+
+        # Event handling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if button_rect.collidepoint(event.pos):
+                    print("Game Started")
+                    running = False  # Placeholder for starting the game
+
+        # Check for hover
+        mouse_pos = pygame.mouse.get_pos()
+        if button_rect.collidepoint(mouse_pos):
+            screen.blit(hover_button_img, (button_x, button_y))
+        else:
+            screen.blit(start_button_img, (button_x, button_y))
+
+        # Update the screen
+        pygame.display.flip()
+        clock.tick(FPS)
+
+if __name__ == "__main__":
+    main()
