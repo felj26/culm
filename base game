@@ -1,0 +1,172 @@
+import pygame
+import random
+
+pygame.init()
+
+width = 1000
+height = 750
+screen = pygame.display.set_mode((width, height))
+pygame.display.set_caption("Mr. Nagra Run")
+
+roger = pygame.image.load('C:/Users/billy/Downloads/roger.png')
+saif = pygame.image.load('C:/Users/billy/Downloads/saif.png')
+billy = pygame.image.load("C:/Users/billy/Downloads/billy.png")
+rushaan = pygame.image.load('C:/Users/billy/Downloads/rushaan.png')
+omer = pygame.image.load('C:/Users/billy/Downloads/omer.png')
+
+blue = (0, 0, 225)
+red = (255, 0, 0)
+purple = (99, 30, 98)
+white = (255, 255, 255)
+black = (0, 0, 0)
+beige = (207, 173, 81)
+green = (0, 255, 0)
+
+
+font = pygame.font.SysFont("Comic Sans", 37)
+
+
+clock = pygame.time.Clock()
+
+
+speed = 6
+gravity = 0.8
+player_jump_strength = -15
+
+
+class Player(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.Surface((50, 50))
+        self.image.fill(red)
+        self.rect = self.image.get_rect(midbottom=(200, height - 100))
+        self.velocity = 0
+        self.is_jumping = False
+
+    def update(self):
+        # Gravity
+        self.velocity += gravity
+        self.rect.y += self.velocity
+
+        # Ground collision
+        if self.rect.bottom >= height - 100:
+            self.rect.bottom = height - 100
+            self.is_jumping = False
+
+    def jump(self):
+        if not self.is_jumping:
+            self.velocity = player_jump_strength
+            self.is_jumping = True
+
+
+class Obstacle(pygame.sprite.Sprite):
+    def __init__(self, x):
+        super().__init__()
+        self.image = pygame.Surface((50, 50))
+        self.image.fill(black)
+        self.rect = self.image.get_rect(midbottom=(x, height - 100))
+
+    def update(self):
+        self.rect.x -= speed
+        if self.rect.right < 0:
+            self.kill()
+
+
+def create_obstacle():
+    obstacle = Obstacle(width + random.randint(100, 300))
+    obstacles.add(obstacle)
+    all_sprites.add(obstacle)
+
+
+def draw_ground():
+    pygame.draw.rect(screen, green, (0, height - 100, width, 100))
+
+
+def display_score(score):
+    score_text = font.render(f"Score: {score}", True, black)
+    screen.blit(score_text, (10, 10))
+
+
+def show_game_over(score):
+    screen.fill(beige)
+    game_over_text = font.render("Game Over!", True, black)
+    score_text = font.render(f"Your Score: {score}", True, black)
+    restart_text = font.render("Press 'R' to Restart", True, red)
+
+    screen.blit(game_over_text, ((width - game_over_text.get_width()) // 2, height // 2 - 100))
+    screen.blit(score_text, ((width - score_text.get_width()) // 2, height // 2))
+    screen.blit(restart_text, ((width - restart_text.get_width()) // 2, height // 2 + 100))
+    pygame.display.flip()
+
+    
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    waiting = False
+
+
+
+def main():
+    global speed
+    # Reset variables
+    score = 0
+    spawn_timer = 0
+    speed = 6
+
+    
+    global all_sprites, obstacles
+    all_sprites = pygame.sprite.Group()
+    obstacles = pygame.sprite.Group()
+
+    player = Player()
+    all_sprites.add(player)
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    player.jump()
+
+        
+        all_sprites.update()
+
+        # Spawn obstacles
+        spawn_timer += 1
+        if spawn_timer > 60:  # Spawn every 1 second
+            create_obstacle()
+            spawn_timer = 0
+
+        # Check collisions
+        if pygame.sprite.spritecollide(player, obstacles, False):
+            running = False
+
+       
+        score += 1
+
+        
+        screen.fill(beige)
+        draw_ground()
+        all_sprites.draw(screen)
+        display_score(score)
+
+        
+        pygame.display.flip()
+        clock.tick(60)
+
+    
+    show_game_over(score)
+
+
+
+while True:
+    main()
+
