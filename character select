@@ -36,6 +36,8 @@ def character_background():
 
 def add_characters():
     mouse_pos = pygame.mouse.get_pos()
+    
+    global selectingcharacters
 
     omer = pygame.image.load('C:/Users/billy/Downloads/omer.png')
     smallomer = pygame.transform.scale( omer, (300, 200))
@@ -50,7 +52,9 @@ def add_characters():
         mouse_pos = event.pos
         if omerbox.collidepoint(mouse_pos):
             print("omer has been selected")
+            selectingcharacters = not selectingcharacters
             time.sleep(0.4)
+
 
 
     roger = pygame.image.load('C:/Users/billy/Downloads/roger.png')
@@ -66,6 +70,7 @@ def add_characters():
         mouse_pos = event.pos
         if rogerbox.collidepoint(mouse_pos):
             print("roger has been selected")
+            selectingcharacters = not selectingcharacters
             time.sleep(0.4)
 
 
@@ -82,6 +87,7 @@ def add_characters():
         mouse_pos = event.pos
         if billybox.collidepoint(mouse_pos):
             print("billy has been selected")
+            selectingcharacters = not selectingcharacters
             time.sleep(0.4)
 
 
@@ -98,6 +104,7 @@ def add_characters():
         mouse_pos = event.pos
         if rushaanbox.collidepoint(mouse_pos):
             print("rushaan has been selected")
+            selectingcharacters = not selectingcharacters
             time.sleep(0.4)
 
 
@@ -114,9 +121,10 @@ def add_characters():
         mouse_pos = event.pos
         if saifbox.collidepoint(mouse_pos):
             print("saif has been selected")
+            selectingcharacters = not selectingcharacters
             time.sleep(0.4)
 
- 
+selectingcharacters = True
 
 running = True
 while running:
@@ -125,8 +133,9 @@ while running:
             running = False
 
     screen.fill(white)
-    character_background()
-    add_characters()
+    if selectingcharacters:
+        character_background()
+        add_characters()
 
     
 
