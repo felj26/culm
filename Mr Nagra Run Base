@@ -22,14 +22,21 @@ green = (0, 255, 0)
 # Fonts
 font = pygame.font.SysFont("Comic Sans", 37)
 
+# Load background image
+background_image = pygame.image.load(r"C:\Users\rogrr\Downloads\background.jpg")
+background_image = pygame.transform.scale(background_image, (width, height))
+
 # Clock
 clock = pygame.time.Clock()
 
 # Variables
 speed = 6
-gravity = 1
+gravity = 0.8
 player_jump_strength = -10
 max_jump_hold_time = 120  # 2 seconds at 60 FPS
+
+# Grass level (based on image resolution)
+grass_level = 625
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -37,7 +44,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.Surface((50, 50))
         self.image.fill(red)
         self.original_image = self.image.copy()
-        self.rect = self.image.get_rect(midbottom=(200, height - 100))
+        self.rect = self.image.get_rect(midbottom=(200, grass_level))
         self.velocity = 0
         self.is_jumping = False
         self.is_ducking = False
@@ -47,7 +54,7 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         # Gravity
         if self.jump_key_held and self.jump_hold_timer < max_jump_hold_time:
-            self.velocity += gravity / 4  # Reduce gravity effect during controlled jump
+            self.velocity += gravity / 2  # Reduce gravity effect during controlled jump
             self.jump_hold_timer += 1
         else:
             self.velocity += gravity
@@ -55,8 +62,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.y += self.velocity
 
         # Ground collision
-        if self.rect.bottom >= height - 100:
-            self.rect.bottom = height - 100
+        if self.rect.bottom >= grass_level:
+            self.rect.bottom = grass_level
             self.is_jumping = False
             self.jump_key_held = False
             self.jump_hold_timer = 0
@@ -84,11 +91,11 @@ class Player(pygame.sprite.Sprite):
         self.is_ducking = False
 
 class Obstacle(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x):
         super().__init__()
         self.image = pygame.Surface((50, 50))
         self.image.fill(black)
-        self.rect = self.image.get_rect(midbottom=(x, y))
+        self.rect = self.image.get_rect(midbottom=(x, grass_level))
 
     def update(self):
         self.rect.x -= speed
@@ -96,21 +103,17 @@ class Obstacle(pygame.sprite.Sprite):
             self.kill()
 
 def create_obstacle():
-    # Spawn the obstacle at a random height to simulate flying in
-    obstacle_y = random.randint(height - 200, height - 100)
-    obstacle = Obstacle(width + random.randint(100, 300), obstacle_y)
+    # Obstacles spawn at the grass level
+    obstacle = Obstacle(width + random.randint(100, 300))
     obstacles.add(obstacle)
     all_sprites.add(obstacle)
-
-def draw_ground():
-    pygame.draw.rect(screen, green, (0, height - 100, width, 100))
 
 def display_score(score):
     score_text = font.render(f"Score: {score}", True, black)
     screen.blit(score_text, (10, 10))
 
 def show_game_over(score):
-    screen.fill(beige)
+    screen.blit(background_image, (0, 0))
     game_over_text = font.render("Game Over!", True, black)
     score_text = font.render(f"Your Score: {score}", True, black)
     restart_text = font.render("Press 'R' to Restart", True, red)
@@ -180,8 +183,7 @@ def main():
         score += 1
 
         # Drawing
-        screen.fill(beige)
-        draw_ground()
+        screen.blit(background_image, (0, 0))
         all_sprites.draw(screen)
         display_score(score)
 
