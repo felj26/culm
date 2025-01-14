@@ -1,4 +1,5 @@
 import pygame
+from pygame.locals import *
 import sys
 import time
 
@@ -34,7 +35,8 @@ button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
 selecting_characters = False
 playing_game = False
 character_selection = None
-character_y = 430
+character_y = None
+ground_y = None
 velocity_y = 0
 is_jumping = False
 gravity = 0.8
@@ -48,10 +50,10 @@ def character_background():
     screen.blit(character_select, character_selectrect)
 
 def add_characters():
+    global character_selection, selecting_characters, playing_game, character_y, ground_y
+
     mouse_pos = pygame.mouse.get_pos()
     
-    global characterselection, selectingcharacters, playinggame, smallomer, smallroger, smallbilly, smallrushaan, smallsaif
-
     omer = pygame.image.load('C:/Users/felix/Downloads/omer.png')
     smallomer = pygame.transform.scale(omer, (300, 200))
     screen.blit(smallomer, (60, 550))
@@ -61,14 +63,14 @@ def add_characters():
         smallomerselect = pygame.transform.scale(omerselect, (300, 200))
         screen.blit(smallomerselect, (60, 550))
 
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        mouse_pos = event.pos
-        if omerbox.collidepoint(mouse_pos):
-            print("omer has been selected")
-            selectingcharacters = not selectingcharacters
-            playinggame = True
-            characterselection = "omer"
-            time.sleep(0.4)
+    if event.type == pygame.MOUSEBUTTONDOWN and omerbox.collidepoint(mouse_pos):
+        print("omer has been selected")
+        character_selection = "omer"
+        character_y = 492
+        ground_y = 492
+        selecting_characters = False
+        playing_game = True
+        time.sleep(0.4)
     
     roger = pygame.image.load('C:/Users/felix/Downloads/roger.png')
     smallroger = pygame.transform.scale(roger, (350, 250))
@@ -78,15 +80,15 @@ def add_characters():
         rogerselect = pygame.image.load('C:/Users/felix/Downloads/rogerselect.png')
         smallrogerselect = pygame.transform.scale(rogerselect, (350, 250))
         screen.blit(smallrogerselect, (195, 510))
-    
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        mouse_pos = event.pos
-        if rogerbox.collidepoint(mouse_pos):
-            print("roger has been selected")
-            selectingcharacters = not selectingcharacters
-            playinggame = True
-            characterselection = "roger"
-            time.sleep(0.4)
+
+    if event.type == pygame.MOUSEBUTTONDOWN and rogerbox.collidepoint(mouse_pos):
+        print("roger has been selected")
+        character_selection = "roger"
+        character_y = 455
+        ground_y = 455
+        selecting_characters = False
+        playing_game = True
+        time.sleep(0.4)
 
     billy = pygame.image.load("C:/Users/felix/Downloads/billy.png")
     smallbilly = pygame.transform.scale(billy, (300, 200))
@@ -97,14 +99,14 @@ def add_characters():
         smallbillyselect = pygame.transform.scale(billyselect, (300, 200))
         screen.blit(smallbillyselect, (405, 562))
 
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        mouse_pos = event.pos
-        if billybox.collidepoint(mouse_pos):
-            print("billy has been selected")
-            selectingcharacters = not selectingcharacters
-            playinggame = True
-            characterselection = "billy"
-            time.sleep(0.4)
+    if event.type == pygame.MOUSEBUTTONDOWN and billybox.collidepoint(mouse_pos):
+        print("billy has been selected")
+        character_selection = "billy"
+        character_y = 505
+        ground_y = 505
+        selecting_characters = False
+        playing_game = True
+        time.sleep(0.4)
 
     rushaan = pygame.image.load('C:/Users/felix/Downloads/rushaan.png')
     smallrushaan = pygame.transform.scale(rushaan, (300, 200))
@@ -114,15 +116,15 @@ def add_characters():
         rushaanselect = pygame.image.load('C:/Users/felix/Downloads/rushaanselect.png')
         smallrushaanselect = pygame.transform.scale(rushaanselect, (300, 200))
         screen.blit(smallrushaanselect, (520, 532))
-    
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        mouse_pos = event.pos
-        if rushaanbox.collidepoint(mouse_pos):
-            print("rushaan has been selected")
-            selectingcharacters = not selectingcharacters
-            playinggame = True
-            characterselection = "rushaan"
-            time.sleep(0.4)
+
+    if event.type == pygame.MOUSEBUTTONDOWN and rushaanbox.collidepoint(mouse_pos):
+        print("rushaan has been selected")
+        character_selection = "rushaan"
+        character_y = 480
+        ground_y = 480
+        selecting_characters = False
+        playing_game = True
+        time.sleep(0.4)
 
     saif = pygame.image.load('C:/Users/felix/Downloads/saif.png')
     smallsaif = pygame.transform.scale(saif, (540, 340))
@@ -132,17 +134,15 @@ def add_characters():
         saifselect = pygame.image.load('C:/Users/felix/Downloads/saifselect.png')
         smallsaifselect = pygame.transform.scale(saifselect, (540, 340))
         screen.blit(smallsaifselect, (585, 490))
-    
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        mouse_pos = event.pos
-        if saifbox.collidepoint(mouse_pos):
-            print("saif has been selected")
-            selectingcharacters = not selectingcharacters
-            playinggame = True
-            characterselection = "saif"
-            time.sleep(0.4)
 
-selectingcharacters = True
+    if event.type == pygame.MOUSEBUTTONDOWN and saifbox.collidepoint(mouse_pos):
+        print("saif has been selected")
+        character_selection = "saif"
+        character_y = 435
+        ground_y = 435
+        selecting_characters = False
+        playing_game = True
+        time.sleep(0.4)
 
 def game_background():
     background = pygame.image.load("C:/Users/felix/Downloads/background.jpg")
@@ -151,7 +151,7 @@ def game_background():
     screen.blit(background, backgroundrect)
 
 def start_game():
-    global character_y, velocity_y, is_jumping
+    global character_y, velocity_y, is_jumping, ground_y
 
     if character_selection == "omer":
         character = pygame.transform.scale(pygame.image.load("C:/Users/felix/Downloads/omer.png"), (300, 200))
@@ -180,8 +180,8 @@ def start_game():
     if is_jumping:
         velocity_y += gravity
         character_y += velocity_y
-        if character_y >= 430:
-            character_y = 430
+        if character_y >= ground_y:
+            character_y = ground_y
             is_jumping = False
 
 # Main loop
@@ -205,6 +205,7 @@ while running:
 
         if event.type == pygame.MOUSEBUTTONDOWN and button_rect.collidepoint(event.pos):
             print("Game Started")
+            time.sleep(0.4)
             selecting_characters = True
 
     elif selecting_characters:
