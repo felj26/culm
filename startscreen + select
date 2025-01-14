@@ -155,19 +155,19 @@ def start_game():
 
     if character_selection == "omer":
         character = pygame.transform.scale(pygame.image.load("C:/Users/felix/Downloads/omer.png"), (300, 200))
-        character_x = 298
+        character_x = 98
     elif character_selection == "roger":
         character = pygame.transform.scale(pygame.image.load("C:/Users/felix/Downloads/roger.png"), (350, 250))
-        character_x = 298
+        character_x = 98
     elif character_selection == "billy":
         character = pygame.transform.scale(pygame.image.load("C:/Users/felix/Downloads/billy.png"), (300, 200))
-        character_x = 365
+        character_x = 165
     elif character_selection == "rushaan":
         character = pygame.transform.scale(pygame.image.load("C:/Users/felix/Downloads/rushaan.png"), (300, 200))
-        character_x = 342.5
+        character_x = 142.5
     elif character_selection == "saif":
         character = pygame.transform.scale(pygame.image.load("C:/Users/felix/Downloads/saif.png"), (540, 340))
-        character_x = 260
+        character_x = 60
 
     screen.blit(character, (character_x, character_y))
 
