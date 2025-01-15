@@ -1,2 +1,2 @@
 shai gilgeous-alexander
-https://prod.liveshare.vsengsaas.visualstudio.com/join?807B57E95001E6E1775B60CDD03DF0C0C2D7
+https://prod.liveshare.vsengsaas.visualstudio.com/join?25C8BBA3782135C44516930CC6B9896E649D
