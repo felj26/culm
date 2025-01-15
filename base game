@@ -1,172 +1,339 @@
 import pygame
+from pygame.locals import *
+import time
 import random
 
 pygame.init()
+pygame.mixer.init()
 
 width = 1000
 height = 750
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Mr. Nagra Run")
+pygame.display.set_caption("Mr Nagra Run")
 
-roger = pygame.image.load('C:/Users/billy/Downloads/roger.png')
-saif = pygame.image.load('C:/Users/billy/Downloads/saif.png')
-billy = pygame.image.load("C:/Users/billy/Downloads/billy.png")
-rushaan = pygame.image.load('C:/Users/billy/Downloads/rushaan.png')
-omer = pygame.image.load('C:/Users/billy/Downloads/omer.png')
+speed = 6
 
 blue = (0, 0, 225)
 red = (255, 0, 0)
 purple = (99, 30, 98)
 white = (255, 255, 255)
 black = (0, 0, 0)
-beige = (207, 173, 81)
-green = (0, 255, 0)
 
+pygame.mixer.music.load("C:/Users/billy/Downloads/game theme.mp3")
+pygame.mixer.music.play()
 
-font = pygame.font.SysFont("Comic Sans", 37)
-
+font = pygame.font.SysFont("Arial", 30)
 
 clock = pygame.time.Clock()
 
+character_y = 430
+velocity_y = 0
+is_jumping = False
+jump_count = 0
+gravity = 1
+jump_height = -18
 
-speed = 6
-gravity = 0.8
-player_jump_strength = -15
+final_jump_count = 0
+
+def startscreen():
+    global begin, selectingcharacters, mouse_released
+    screen.fill(white)
+    startscreen_img = pygame.image.load("C:/Users/billy/Downloads/startscreen.jpeg")
+    startscreenrect = startscreen_img.get_rect()
+    startscreenrect.center = (width // 2, height // 2)
+    screen.blit(startscreen_img, startscreenrect)
+
+    startbutton = pygame.image.load('C:/Users/billy/Downloads/startbutton.png')
+    startbuttonrect = startbutton.get_rect()
+    startbuttonrect.topleft = (390, 585)
+    
+    mouse_pos = pygame.mouse.get_pos()
+    if startbuttonrect.collidepoint(mouse_pos):
+        buttonselect = pygame.image.load('C:/Users/billy/Downloads/startbuttonhover.png')
+        screen.blit(buttonselect, startbuttonrect)
+    else:
+        screen.blit(startbutton, startbuttonrect)
+    
+    startclick = pygame.mixer.Sound("C:/Users/billy/Downloads/gamenoise.mp3")
+
+    if pygame.mouse.get_pressed()[0] and mouse_released:  
+        if startbuttonrect.collidepoint(mouse_pos):
+            begin = False
+            startclick.play()
+            selectingcharacters = True
+            mouse_released = False
+
+def character_background():
+    character_select = pygame.image.load("C:/Users/billy/Downloads/select.jpeg")
+    character_selectrect = character_select.get_rect()
+    character_selectrect.center = (width // 2, height // 2)
+    screen.blit(character_select, character_selectrect)
+
+def add_characters():
+    global selectingcharacters, playinggame, characterselection, mouse_released
+    clicksound = pygame.mixer.Sound("C:/Users/billy/Downloads/click.mp3")
+    mouse_pos = pygame.mouse.get_pos()
+
+    omer = pygame.image.load('C:/Users/billy/Downloads/omer.png')
+    smallomer = pygame.transform.scale(omer, (300, 200))
+    screen.blit(smallomer, (60, 550))
+    omerbox = pygame.Rect(210, 580, 120, 100)
+    if omerbox.collidepoint(mouse_pos):
+        omerselect = pygame.image.load('C:/Users/billy/Downloads/omerselect.png')
+        smallomerselect = pygame.transform.scale(omerselect, (300, 200))
+        screen.blit(smallomerselect, (60, 550))
+
+    if pygame.mouse.get_pressed()[0] and mouse_released:  
+        if omerbox.collidepoint(mouse_pos):
+            print("omer has been selected")
+            selectingcharacters = False
+            clicksound.play()
+            playinggame = True
+            characterselection = "omer"
+            mouse_released = False
+    
+    roger = pygame.image.load('C:/Users/billy/Downloads/roger.png')
+    smallroger = pygame.transform.scale(roger, (350, 250))
+    screen.blit(smallroger, (195, 510))
+    rogerbox = pygame.Rect(350, 580, 120, 100)
+    if rogerbox.collidepoint(mouse_pos):
+        rogerselect = pygame.image.load('C:/Users/billy/Downloads/rogerselect.png')
+        smallrogerselect = pygame.transform.scale(rogerselect, (350, 250))
+        screen.blit(smallrogerselect, (195, 510))
+    
+    if pygame.mouse.get_pressed()[0] and mouse_released:  
+        if rogerbox.collidepoint(mouse_pos):
+            print("roger has been selected")
+            selectingcharacters = False
+            clicksound.play()
+            playinggame = True
+            characterselection = "roger"
+            mouse_released = False
+
+    billy = pygame.image.load("C:/Users/billy/Downloads/billy.png")
+    smallbilly = pygame.transform.scale(billy, (300, 200))
+    screen.blit(smallbilly, (405, 562))
+    billybox = pygame.Rect(490, 580, 120, 100)
+    if billybox.collidepoint(mouse_pos):
+        billyselect = pygame.image.load('C:/Users/billy/Downloads/billyselect.png')
+        smallbillyselect = pygame.transform.scale(billyselect, (300, 200))
+        screen.blit(smallbillyselect, (405, 562))
+
+    if pygame.mouse.get_pressed()[0] and mouse_released:  
+        if billybox.collidepoint(mouse_pos):
+            print("billy has been selected")
+            selectingcharacters = False
+            clicksound.play()
+            playinggame = True
+            characterselection = "billy"
+            mouse_released = False
+
+    rushaan = pygame.image.load('C:/Users/billy/Downloads/rushaan.png')
+    smallrushaan = pygame.transform.scale(rushaan, (300, 200))
+    screen.blit(smallrushaan, (520, 532))
+    rushaanbox = pygame.Rect(630, 580, 120, 100)
+    if rushaanbox.collidepoint(mouse_pos):
+        rushaanselect = pygame.image.load('C:/Users/billy/Downloads/rushaanselect.png')
+        smallrushaanselect = pygame.transform.scale(rushaanselect, (300, 200))
+        screen.blit(smallrushaanselect, (520, 532))
+    
+    if pygame.mouse.get_pressed()[0] and mouse_released:  
+        if rushaanbox.collidepoint(mouse_pos):
+            print("rushaan has been selected")
+            selectingcharacters = False
+            clicksound.play()
+            playinggame = True
+            characterselection = "rushaan"
+            mouse_released = False
+
+    saifwriting = font.render("HARD", True, red)
+    saif = pygame.image.load('C:/Users/billy/Downloads/saif.png')
+    smallsaif = pygame.transform.scale(saif, (540, 340))
+    screen.blit(smallsaif, (585, 490))
+    screen.blit(saifwriting, (800, 550))
+    saifbox = pygame.Rect(770, 580, 120, 100)
+    if saifbox.collidepoint(mouse_pos):
+        saifselect = pygame.image.load('C:/Users/billy/Downloads/saifselect.png')
+        smallsaifselect = pygame.transform.scale(saifselect, (540, 340))
+        screen.blit(smallsaifselect, (585, 490))
+    
+    if pygame.mouse.get_pressed()[0] and mouse_released:  
+        if saifbox.collidepoint(mouse_pos):
+            print("saif has been selected")
+            selectingcharacters = False
+            clicksound.play()
+            playinggame = True
+            characterselection = "saif"
+            mouse_released = False
+
+def gamebackground():
+    background = pygame.image.load('C:/Users/billy/Downloads/background.jpg')
+    backgroundrect = background.get_rect()
+    backgroundrect.center = (width // 2, height // 2)
+    screen.blit(background, backgroundrect)
+
+def startgame():
+    global character_y, velocity_y, is_jumping, jump_count, player_rect, keys, final_jump_count
+
+    if characterselection == "omer":
+        character = pygame.transform.scale(pygame.image.load('C:/Users/billy/Downloads/omer.png'), (300, 200))
+        character_x = 98
+    elif characterselection == "roger":
+        character = pygame.transform.scale(pygame.image.load('C:/Users/billy/Downloads/roger.png'), (350, 250))
+        character_x = 98
+    elif characterselection == "billy":
+        character = pygame.transform.scale(pygame.image.load('C:/Users/billy/Downloads/billy.png'), (300, 200))
+        character_x = 165
+    elif characterselection == "rushaan":
+        character = pygame.transform.scale(pygame.image.load('C:/Users/billy/Downloads/rushaan.png'), (300, 200))
+        character_x = 142.5
+    elif characterselection == "saif":
+        character = pygame.transform.scale(pygame.image.load('C:/Users/billy/Downloads/saif.png'), (540, 340))
+        character_x = 60
+
+    screen.blit(character, (character_x, character_y))
+
+    jumpnoise = pygame.mixer.Sound("C:/Users/billy/Downloads/jump.mp3")
+
+    keys = pygame.key.get_pressed()
+
+    if not is_jumping and jump_count < 3 and (keys[pygame.K_UP] or keys[pygame.K_SPACE]):
+        velocity_y = jump_height
+        jump_count += 1
+        final_jump_count += 1
+        jumpnoise.play()
+        is_jumping = True
+
+    if is_jumping:
+        velocity_y += gravity
+        character_y += velocity_y
+    if character_y >= 430:
+        character_y = 430
+        is_jumping = False
+        jump_count = 0
+
+    player_rect = pygame.Rect(character_x + 100, character_y, 50, 50)
 
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.Surface((50, 50))
-        self.image.fill(red)
-        self.rect = self.image.get_rect(midbottom=(200, height - 100))
-        self.velocity = 0
-        self.is_jumping = False
+    powerups = [
+        pygame.image.load("C:/Users/billy/Downloads/coin.png")
+    ]
 
-    def update(self):
-        # Gravity
-        self.velocity += gravity
-        self.rect.y += self.velocity
+    #if jump_count -1%10 == 0:
+        #activepowerup = random.choice(powerups)
+        #screen.blit(activepowerup, (300, 200))
 
-        # Ground collision
-        if self.rect.bottom >= height - 100:
-            self.rect.bottom = height - 100
-            self.is_jumping = False
+    jump_text = font.render(f"Jumps: {final_jump_count}", True, black)
+    screen.blit(jump_text, (10, 40))
 
-    def jump(self):
-        if not self.is_jumping:
-            self.velocity = player_jump_strength
-            self.is_jumping = True
+block_x, block_y, block_velocity_x, block_velocity_y = 0, 0, 0, 0
+active_block = None
 
+def bossfight():
+    global block_x, block_y, block_velocity_x, block_velocity_y, active_block, playinggame, deathscreen, block_speed_multiplier
 
-class Obstacle(pygame.sprite.Sprite):
-    def __init__(self, x):
-        super().__init__()
-        self.image = pygame.Surface((50, 50))
-        self.image.fill(black)
-        self.rect = self.image.get_rect(midbottom=(x, height - 100))
+    nagra = pygame.transform.scale(pygame.image.load("C:/Users/billy/Downloads/nagra.png"), (300, 500))
+    screen.blit(nagra, (785, 180))
 
-    def update(self):
-        self.rect.x -= speed
-        if self.rect.right < 0:
-            self.kill()
+    block_images = [
+        pygame.transform.rotate(pygame.transform.scale(pygame.image.load("C:/Users/billy/OneDrive/Pictures/Screenshots/block1.png"), (100, 70)), 25),
+        pygame.transform.rotate(pygame.transform.scale(pygame.image.load("C:/Users/billy/OneDrive/Pictures/Screenshots/block2.png"), (100, 70)), 25),
+        pygame.transform.rotate(pygame.transform.scale(pygame.image.load("C:/Users/billy/OneDrive/Pictures/Screenshots/block3.png"), (100, 70)), 25)
+    ]
 
+    shotsound = pygame.mixer.Sound("C:/Users/billy/Downloads/shot.mp3")
 
-def create_obstacle():
-    obstacle = Obstacle(width + random.randint(100, 300))
-    obstacles.add(obstacle)
-    all_sprites.add(obstacle)
+    if active_block is None:
+        active_block = random.choice(block_images)
+        shotsound.play()
+        block_x = 800
+        block_y = 450
+        block_velocity_x = -8
+        block_velocity_y = 0
+        block_speed_multiplier = 1
 
+    block_velocity_x = -8 - block_speed_multiplier
 
-def draw_ground():
-    pygame.draw.rect(screen, green, (0, height - 100, width, 100))
+    screen.blit(active_block, (block_x, block_y))
+    block_x += block_velocity_x
+    block_y += block_velocity_y
 
+    block_speed_multiplier += 0.3
 
-def display_score(score):
-    score_text = font.render(f"Score: {score}", True, black)
-    screen.blit(score_text, (10, 10))
+    if block_x + 100 < 0:
+        active_block = None
+
+    block_rect = pygame.Rect(block_x, block_y, 100, 70)
 
 
-def show_game_over(score):
-    screen.fill(beige)
-    game_over_text = font.render("Game Over!", True, black)
-    score_text = font.render(f"Your Score: {score}", True, black)
-    restart_text = font.render("Press 'R' to Restart", True, red)
 
-    screen.blit(game_over_text, ((width - game_over_text.get_width()) // 2, height // 2 - 100))
-    screen.blit(score_text, ((width - score_text.get_width()) // 2, height // 2))
-    screen.blit(restart_text, ((width - restart_text.get_width()) // 2, height // 2 + 100))
+    death = pygame.mixer.Sound("C:/Users/billy/Downloads/death.mp3")
+
+    if player_rect.colliderect(block_rect):
+        death.play()
+        active_block = None
+        playinggame = False
+        deathscreen = True
+
+def playagain():
+    global deathscreen, playinggame, selectingcharacters, running, final_jump_count
+    screen.fill(white)
+    gameoverscreen = pygame.image.load("C:/Users/billy/Downloads/gameoverscreen.png")
+    gameoverscreenrect = gameoverscreen.get_rect()
+    gameoverscreenrect.center = (width // 2, height // 2)
+    screen.blit(gameoverscreen, gameoverscreenrect)
+
+   
+    final_jump_text = font.render(f"Final Jumps: {final_jump_count}", True, black)
+    screen.blit(final_jump_text, ((width - final_jump_text.get_width()) // 2 + 30, height // 2 + 40))
+
+    keys = pygame.key.get_pressed()
+
+    if keys[pygame.K_r]:
+        deathscreen = False
+        playinggame = True
+        final_jump_count = 0  
+    if keys[pygame.K_c]:
+        deathscreen= False
+        playinggame= False
+        selectingcharacters = True
+        final_jump_count = 0 
+    if keys[pygame.K_q]:
+        running = False 
+
+running = True
+begin = True
+characterselection = False
+selectingcharacters = False
+playinggame = False
+deathscreen = False
+mouse_released = True
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.MOUSEBUTTONUP:  
+            mouse_released = True
+
+    if begin:
+        startscreen()
+
+    if selectingcharacters:
+        screen.fill(white)
+        character_background()
+        add_characters()
+
+    if playinggame:
+        screen.fill(white)
+        gamebackground()
+        startgame()
+        bossfight()
+
+    if deathscreen:
+        playagain()
+
+    clock.tick(60)
     pygame.display.flip()
 
-    
-    waiting = True
-    while waiting:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_r:
-                    waiting = False
-
-
-
-def main():
-    global speed
-    # Reset variables
-    score = 0
-    spawn_timer = 0
-    speed = 6
-
-    
-    global all_sprites, obstacles
-    all_sprites = pygame.sprite.Group()
-    obstacles = pygame.sprite.Group()
-
-    player = Player()
-    all_sprites.add(player)
-
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    player.jump()
-
-        
-        all_sprites.update()
-
-        # Spawn obstacles
-        spawn_timer += 1
-        if spawn_timer > 60:  # Spawn every 1 second
-            create_obstacle()
-            spawn_timer = 0
-
-        # Check collisions
-        if pygame.sprite.spritecollide(player, obstacles, False):
-            running = False
-
-       
-        score += 1
-
-        
-        screen.fill(beige)
-        draw_ground()
-        all_sprites.draw(screen)
-        display_score(score)
-
-        
-        pygame.display.flip()
-        clock.tick(60)
-
-    
-    show_game_over(score)
-
-
-
-while True:
-    main()
-
+pygame.quit()
